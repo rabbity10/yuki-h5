@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>叶泓廷 · 交互作品集 | Yuki Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px 20px 80px;
+        }
+
+        .slash-deco {
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: #c44569;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 40px 0 16px 0;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 48px;
+            height: 4px;
+            background: #c44569;
+            border-radius: 2px;
+        }
+
+        .filter-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 20px 0 28px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 12px;
+        }
+        .filter-btn {
+            background: none;
+            border: none;
+            padding: 8px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 40px;
+            color: #5a5a5a;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .filter-btn.active {
+            background: #c44569;
+            color: white;
+            box-shadow: 0 4px 10px rgba(196, 69, 105, 0.2);
+        }
+        .filter-btn:active { transform: scale(0.96); }
+
+        .card, .mini-card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 24px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s;
+            border: 1px solid #f0f0f0;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card:hover, .mini-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.12);
+        }
+        .card.hide-item, .mini-card.hide-item {
+            display: none;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .card-tag {
+            font-size: 12px;
+            background: #f5f5f5;
+            padding: 4px 12px;
+            border-radius: 40px;
+            color: #c44569;
+            font-weight: 500;
+        }
+        .card-desc {
+            font-size: 15px;
+            color: #4a4a4a;
+            margin: 10px 0 12px;
+        }
+        .card-meta {
+            font-size: 13px;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .badge {
+            background: #f8f8f8;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .detail-btn {
+            background: #fff0f3;
+            border: none;
+            color: #c44569;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .detail-btn:active { background: #fad9e2; transform: scale(0.97); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 100%;
+            border-radius: 36px;
+            padding: 28px 24px;
+            position: relative;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.2);
+            animation: modalPop 0.25s ease;
+        }
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+        .modal h3 { margin-bottom: 12px; color: #c44569; }
+
+        .hero {
+            text-align: left;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 24px;
+        }
+        .name {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin: 8px 0 8px;
+        }
+        .sub {
+            font-size: 16px;
+            color: #c44569;
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .info-row {
+            font-size: 15px;
+            color: #3a3a3a;
+            margin: 12px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .copy-tip {
+            background: #f2f2f2;
+            border-radius: 24px;
+            padding: 4px 12px;
+            font-size: 12px;
+            margin-left: 8px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .copy-tip:active { background: #ddd; }
+        .contact {
+            background: #fafafa;
+            padding: 12px 16px;
+            border-radius: 40px;
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0 10px;
+        }
+        .skill-item {
+            background: #f2f2f2;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .video-placeholder {
+            background: #f7f7f7;
+            border-radius: 20px;
+            padding: 20px 12px;
+            text-align: center;
+            margin: 12px 0 8px;
+            font-size: 14px;
+            color: #666;
+            border: 1px dashed #ddd;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #eee;
+            color: #aaa;
+            font-size: 13px;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            background: #c44569;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 99;
+            transition: 0.2s;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:active { transform: scale(0.92); }
+        @media (max-width: 480px) {
+            .container { padding: 16px; }
+            .name { font-size: 38px; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Hero 个人区 -->
+    <div class="hero">
+        <div class="slash-deco">DESIGN · POWERPOINT · PHOTOGRAPHY · FASHION</div>
+        <div class="name">叶泓廷<br>Yuki</div>
+        <div class="sub">21岁 · 三江学院 · 新闻学 · ENFP</div>
+        <div class="info-row">
+            <span>📞 15159963600 <span class="copy-tip" data-copy="15159963600">复制</span></span>
+            <span>✉️ 3113281434@qq.com <span class="copy-tip" data-copy="3113281434@qq.com">复制</span></span>
+        </div>
+        <div class="contact">
+            <span>⚡️ 网速快 · 热点捕手</span>
+            <span>🎬 网文忠实爱好者</span>
+            <span>🧘 情绪稳定选手</span>
+        </div>
+        <div class="skills">
+            <span class="skill-item">文案策划</span>
+            <span class="skill-item">短视频剪辑</span>
+            <span class="skill-item">Vlog拍摄</span>
+            <span class="skill-item">个人IP运营</span>
+            <span class="skill-item">热点洞察</span>
+        </div>
+    </div>
+
+    <!-- 个人简介卡片 -->
+    <div class="card" data-category="about">
+        <div class="card-title">自我评价</div>
+        <div class="card-desc">
+            ✔️ 学习能力强：快速掌握不同领域操作策略。<br>
+            ✔️ 网速快：冲浪时间长，十足网感 + 热点捕捉力。<br>
+            ✔️ 情绪稳定：良好的沟通表达能力。<br>
+            ✔️ 热爱文学创作类工作，擅长不同风格的文案写作。
+        </div>
+    </div>
+
+    <!-- 筛选导航栏 -->
+    <div class="filter-nav">
+        <button class="filter-btn active" data-filter="all">全部作品</button>
+        <button class="filter-btn" data-filter="copywriting">文案作品</button>
+        <button class="filter-btn" data-filter="video">视频作品</button>
+        <button class="filter-btn" data-filter="operation">运营策划</button>
+    </div>
+
+    <div id="works-area">
+        <!-- ========= 文案作品集 ========= -->
+        <div class="section-title" data-category-title="copywriting">文案作品</div>
+        <div class="slash-deco" data-category-title="copywriting">Copywriting Work</div>
+        
+        <div class="grid-2">
+            <div class="mini-card" data-category="copywriting">
+                <div style="font-weight: 700; margin-bottom: 8px;">🏆 征文作品</div>
+                <div style="font-size: 14px; color: #555;">情感叙事类征文，细腻笔触捕捉生活瞬间，获得院一等奖。</div>
+                <div class="card-meta" style="border: none; padding: 6px 0 0;"><span class="badge">散文</span><span class="badge">情绪表达</span></div>
+                <button class="detail-btn" data-modal-title="征文作品 · 给父母的一封家书" data-modal-desc="致我最牵挂的家人一封信
+亲爱的爸妈：
+别经数月，思何可支。
+近日南京秋风徐徐，不知家乡亦是如此?距我离家已有数月，思乡之情溢于言表。流光容易把人抛，红了樱桃，绿了芭蕉。恍惚中我已然长大，你们却即将白发苍颜。回忆起我十八年的人生历程，有你们的参与和陪伴，何其有幸。毕淑敏曾言道人间的温情，跨越无数岁月和命运的阴霾，将记忆烘烤得蓬松而馨”，我想念那个充满馥郁岁月的小屋，我想念那个充满浓郁花香的归家路，我想念那个充满熟悉气息的空气，可我最想念的，还是你们。
+人生一世，草木一春，我的父亲，我的大树，你的肩膀曾是小小的我看世界的支柱，可当我一次次地接近天空，你却离天空渐渐远去。生活赋予了父亲太多，多到让我曾以为父亲无所不能，他要沉稳地撑起一个家，他要不知疲倦地把所有事尽善尽美。高尔基曾说过：父爱是一部震撼心灵的巨著，读懂了他，你就读懂了人生。此时此刻写下这段话，我脑海中浮现一幕幕：低头可见的白发，微笑突起的皱纹，渐渐慢下的步伐。以前我总觉得对父亲说一句我爱你是一件极其困难的事，可现在我每天都想对您说一遍我想你了。
+三千繁华，一梦长安，我的母亲，我的撒气包，我总嫌您啰嗦，一件事要滔滔不绝，我总想快点长大，摆脱您的束缚，我以为的枷锁，现在却成了我的可望不可及。您小心翼翼地保护我缓慢又笨拙的成长之路，让我能勇敢地大步返向未来，但我却在漫长的旅程中忘了您的不易与苦楚。日月蹉跎，时光留给我们的相处机会寥寥无几，所谓诗酒趁年华，我想大声告诉您：我想你，在每个喷薄欲出的清晨：我想你，在每个清冷漆黑的午夜；我想你，在每个车水马龙的街道：我想你，在每个内忧外困的时候。
+可时光啊不听话，总催着人长大。行李箱装满了我远去的痕迹，却装不了我对家的思念。亲爱的爸爸妈妈，别担心!生活是一场盛大的冒险，我背上行囊，远去浩大世界，观赏山水未来，前行的脚步不会停，思念的心不会变，感谢你们，让我在遥远他乡有了牵挂，知旅途困难。前进之心，方更为坚定。
+言不尽思，再祈珍重。">查看详情</button>
+            </div>
+            <div class="mini-card" data-category="copywriting">
+                <div style="font-weight: 700; margin-bottom: 8px;">💊 大广赛 · 999感冒灵</div>
+                <div style="font-size: 14px; color: #555;">“暖身更暖心”主题文案，结合年轻化洞察，传递治愈感。</div>
+                <div class="card-meta" style="border: none; padding: 6px 0 0;"><span class="badge">广告文案</span><span class="badge">品牌洞察</span></div>
+                <button class="detail-btn" data-modal-title="999感冒灵 · 大广赛策划" data-modal-desc="冬日白雪倾泻
+路边小狗打着哆嗦
+颤颤巍巍中
+拾起一把绿色的伞
+
+请给我一把绿伞吧
+鲜衣怒马的少年郎说
+我想做梦想家
+发现还是更想家
+漆黑的夜快让我变瞎
+真想来瓶999呀
+
+请给我一把绿伞吧
+热血沸腾的考研人说
+我在暮律中盛开一场梦
+梦间在不断的疼
+困难险阻止不住地碰
+还是要999来缝
+
+请给我一把绿伞吧
+默默无闻的环卫工说
+破旧的扫帚
+心也在颤抖
+不知该往哪里去走
+应该来一口999
+
+请给我一把绿伞吧
+垂暮之年的老人家说
+孩子已奔走数年
+家也逝去昔日容颜
+几时没尝过的甜
+心要用999来填
+
+绿伞摇摇晃晃
+治愈无数人家
+很多时刻
+他们正需要那片温暖
+而999感冒灵颗粒
+暖暖的很贴心
+给你冬日里无限温暖">查看详情</button>
+            </div>
+            <div class="mini-card" data-category="copywriting">
+                <div style="font-weight: 700; margin-bottom: 8px;">📱 电台文案</div>
+                <div style="font-size: 14px; color: #555;">晚间电台抒情风格脚本，情绪流文案。</div>
+                <div class="card-meta" style="border: none; padding: 6px 0 0;"><span class="badge">治愈暖心</span><span class="badge">走进生活</span></div>
+                <button class="detail-btn" data-modal-title="电台文案" data-modal-desc="【团团晚安电台Vol 87】
+《家的意义是许多第一次的总和》
+五月已至，你离归家还有多远呢？
+大家晚上好，这里是团团晚安电台，我是今天的主播XXX。
+家，是温暖的代名词，是所有不安困境下的避风港。人们对家总是有许多定义，小小房间是家，粗茶淡饭是家，喋喋不休亦是家。家对国人心中具有永恒的特殊意义，我们从呱呱坠地这个世界，第一次进入的是家，是属于我们的家，是我们在这个陌生变幻的环境得以栖息的彼岸。
+倦鸟归巢，落叶归根，我们最终要回到的，也是家。它渺小，也宏大。家承载着的，是第一次当父母的大人与第一次当子女的孩童之间的思念羁绊；家记录的，是久居的幸福记忆里无数的脚印和指纹；家依托着的，是义无反顾的奔跑和落花流水的后路。我们在家中学会爱，学着长大，学着去告别，我们像只易碎的玻璃，而家，正是瓶中遇火不燃的水。
+五月鸣蜩，家中灯火已为你燃起，在外思乡的孩童，请乘着晚霞歌余，回家看看吧。
+祝你晚安，好梦。">查看详情</button>
+            </div>
+            <!-- 新增公众号作品卡片（原 Vlog 卡片位置，但放于文案区） -->
+            <div class="mini-card" data-category="copywriting">
+                <div style="font-weight: 700; margin-bottom: 8px;">📖 个人旅行公众号</div>
+                <div style="font-size: 14px; color: #555;">独立运营个人公众号「一起去流浪吧」，聚焦青年旅行与社会热点，原创文章平均阅读3000+。</div>
+                <div class="card-meta" style="border: none; padding: 6px 0 0;"><span class="badge">旅行日记</span><span class="badge">游客体验</span></div>
+                <a href="https://mp.weixin.qq.com/s/_lRGDk0kzVOBCmetaMezlA" target="_blank" rel="noopener noreferrer" class="detail-btn" style="text-decoration: none; display: inline-block;">
+    阅读完整文章 ↗
+</a >
+            </div>
+        </div>
+
+        <!-- ========= 视频作品 ========= -->
+        <div class="section-title" data-category-title="video">视频作品</div>
+        <div class="slash-deco" data-category-title="video">Video Work</div>
+        
+        <!-- 原Vlog卡片已替换为公众号卡片，保留微电影 -->
+        <div class="card" data-category="video">
+            <div class="card-title">🎬 微电影 · 信笺1923 <span class="card-tag">历史/人文</span></div>
+            <div class="card-desc">以“南京大学生”视角，通过信件与南京大屠杀中的角色建立情感联结，呼吁铭记历史，珍视和平。<br>负责：文案｜精剪｜出镜｜配音。</div>
+            <div class="video-placeholder">📽️ 情感人文微电影 </div>
+            <a href="https://pan.baidu.com/s/1yygh6oTXU4RCADurf4UtuQ?pwd=5BAy" target="_blank" class="detail-btn" style="text-decoration: none; display: inline-block;">
+    🎬 播放微电影
+</a >
+        </div>
+
+        <!-- ========= 运营策划 ========= -->
+        <div class="section-title" data-category-title="operation">运营策划</div>
+        <div class="slash-deco" data-category-title="operation">Operations Planning</div>
+        
+        <div class="card" data-category="operation">
+            <div class="card-title">✨ 个人IP从0到1策划实践</div>
+            <div class="card-desc">从商业角度孵化知识/生活类IP，内容矩阵：KOL出镜强化人设，针对目标人群输出干货+情感共鸣。</div>
+            <div class="card-meta"><span>📈 3个月视频浏览量50000+</span><span>💬 社群转化率12%</span><span>🎯 视频号</span></div>
+            <button class="detail-btn" data-modal-title="IP孵化全案拆解" data-modal-desc="包含账号定位、内容日历、引流钩子设计及私域沉淀路径。运营期间最高单篇笔记曝光12w，涨粉3000+。">查看方案细节</button>
+        </div>
+        
+        <div class="card" data-category="operation">
+            <div class="card-title">🎵 刀郎粉丝向账号运营 · 热点剪辑</div>
+            <div class="card-desc">账号包装为“刀郎深度乐迷”，结合近期热点产出情绪混剪，依据数据调整剪辑节奏。</div>
+            <div class="video-placeholder">🔥 代表作品: 《罗刹海市》二创剪辑，全网播放量20w+，点赞1.2w</div>
+            <button class="detail-btn" data-modal-title="热点运营案例：刀郎粉丝号" data-modal-desc="从0开始仅用一周打造一个垂直音乐账号。通过情绪向卡点剪辑+话题#刀郎唤醒计划，冲上音乐热榜。期间与粉丝互动率达8.7%。">查看运营复盘</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="font-size: 18px; font-weight: 600; margin-bottom: 10px; color:#c44569;">感谢观看<br>期待与您交流</div>
+        <div>📞 15159963600 &nbsp;|&nbsp; ✉️ 3113281434@qq.com</div>
+        <div style="margin-top: 16px;"><span class="badge" style="background:#f0f0f0;">👋 扫码可直联 / 索要完整视频</span></div>
+        <div style="margin-top: 24px;">DESIGN · POWERPOINT · PHOTOGRAPHY · FASHION<br>© 2025 叶泓廷 Yuki Portfolio</div>
+    </div>
+</div>
+
+<div class="back-to-top" id="backToTop">↑</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3 id="modalTitle">作品详情</h3>
+        <p id="modalDesc">详细内容展示</p>
+    </div>
+</div>
+
+<script>
+    // 筛选逻辑
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const allCards = document.querySelectorAll('.card, .mini-card');
+    const sectionTitles = document.querySelectorAll('[data-category-title]');
+    
+    function filterWorks(category) {
+        allCards.forEach(card => {
+            const cardCat = card.getAttribute('data-category');
+            if (category === 'all') {
+                card.classList.remove('hide-item');
+            } else {
+                if (cardCat === category) {
+                    card.classList.remove('hide-item');
+                } else {
+                    card.classList.add('hide-item');
+                }
+            }
+        });
+        // 联动隐藏空分区标题
+        sectionTitles.forEach(title => {
+            const parentSection = title.parentElement;
+            let anyVisible = false;
+            let currentIdx = Array.from(parentSection.children).indexOf(title);
+            for (let i = currentIdx+1; i < parentSection.children.length; i++) {
+                let el = parentSection.children[i];
+                if (el.classList && (el.classList.contains('section-title') || (el.classList.contains('slash-deco') && el.hasAttribute('data-category-title')))) break;
+                if (el.classList && (el.classList.contains('card') || el.classList.contains('mini-card'))) {
+                    if (!el.classList.contains('hide-item')) anyVisible = true;
+                }
+            }
+            if (!anyVisible && category !== 'all') title.style.display = 'none';
+            else title.style.display = '';
+        });
+        document.querySelectorAll('.slash-deco').forEach(slash => {
+            let hasVisible = false;
+            let nextEl = slash.nextElementSibling;
+            while(nextEl && !(nextEl.classList && nextEl.classList.contains('section-title') && nextEl.hasAttribute('data-category-title'))) {
+                if (nextEl.classList && (nextEl.classList.contains('card') || nextEl.classList.contains('mini-card')) && !nextEl.classList.contains('hide-item')) {
+                    hasVisible = true;
+                    break;
+                }
+                nextEl = nextEl.nextElementSibling;
+            }
+            if (!hasVisible && category !== 'all') slash.style.display = 'none';
+            else slash.style.display = '';
+        });
+    }
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filterValue = btn.getAttribute('data-filter');
+            filterWorks(filterValue);
+        });
+    });
+    filterWorks('all');
+    
+    // 模态框
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalClose = document.querySelector('.modal-close');
+    
+    function openModal(title, desc) {
+        modalTitle.innerText = title;
+        modalDesc.innerText = desc;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    
+    document.querySelectorAll('.detail-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const title = btn.getAttribute('data-modal-title') || '作品细节';
+            const desc = btn.getAttribute('data-modal-desc') || '更多精彩内容可联系作者获取完整作品集。';
+            openModal(title, desc);
+        });
+    });
+    
+    // 复制功能
+    const copySpans = document.querySelectorAll('.copy-tip');
+    copySpans.forEach(span => {
+        span.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const textToCopy = span.getAttribute('data-copy');
+            if (!textToCopy) return;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = span.innerText;
+                span.innerText = '已复制✓';
+                setTimeout(() => { span.innerText = originalText; }, 1500);
+            }).catch(() => alert('手动复制吧：' + textToCopy));
+        });
+    });
+    
+    // 返回顶部
+    const backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) backBtn.classList.add('show');
+        else backBtn.classList.remove('show');
+    });
+    backBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    // 渐现动画
+    const fadeElements = document.querySelectorAll('.card, .mini-card, .hero');
+    const appearObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                appearObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.05 });
+    fadeElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(15px)';
+        el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        appearObserver.observe(el);
+    });
+</script>
+</body>
+</html>
